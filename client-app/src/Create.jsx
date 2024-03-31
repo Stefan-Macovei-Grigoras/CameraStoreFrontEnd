@@ -76,7 +76,7 @@ function Create() {
     };
 
     return (
-        <div className='d-flex w-100 vh-100 justify-content-center align-items-center bg-light'>
+        <div className='d-flex w-100 vh-100 justify-content-center align-items-center'>
             <div className='w-50 border bg-white shadow px-5 pt-3 pb-5 rounded'>
                 <h1>Add a camera</h1>
                 <form onSubmit={handleSubmit}>

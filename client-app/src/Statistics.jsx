@@ -120,10 +120,10 @@ function DonutChart() {
     }, [priceRangeData]);
 
     return (
-        <div className="d-flex flex-column justify-content-center align-items-center bg-light vh-70">
+        <div className="d-flex flex-column justify-content-center align-items-center vh-70">
             <h2>Price Range Distribution</h2>
             <canvas id="donutChart" width="200" height="200"></canvas>
-            <div className="col-md-12 bg-light text-right">
+            <div className="col-md-12 text-right">
                 <Link to="/" className='btn btn-primary ms-3'>Back</Link>
             </div>
         </div>
