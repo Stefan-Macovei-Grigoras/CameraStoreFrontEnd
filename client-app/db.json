@@ -1,0 +1,16 @@
+{
+  "cameras": [
+    {
+      "id": "3",
+      "name": "Sony Alpha a6000",
+      "price": 599,
+      "description": "A compact mirrorless camera with fast autofocus and high-resolution images."
+    },
+    {
+      "id": "4",
+      "name": "Fujifilm X-T4",
+      "price": 1699,
+      "description": "A versatile mirrorless camera with advanced video capabilities and exceptional image quality."
+    }
+  ]
+}
