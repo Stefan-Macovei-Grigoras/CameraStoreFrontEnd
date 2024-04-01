@@ -9,10 +9,12 @@ import Update from './Update.jsx'
 import Read from './Read.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Statistics from './Statistics.jsx'
+import ConnectionStatus from './ConnectionStatus.jsx'
 
 function App() {
   return (
     <BrowserRouter>
+     <ConnectionStatus />
       <Routes>
         <Route path='/' element={<Home />}></Route>
         <Route path='/create' element={<Create />} />
