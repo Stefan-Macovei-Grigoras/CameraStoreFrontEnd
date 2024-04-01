@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 
 function ConnectionStatus() {
@@ -35,11 +36,11 @@ function ConnectionStatus() {
   }, []);
 
   if (!isOnline) {
-    return <div className="alert alert-danger">No internet connection!</div>;
+    return <div className="alert alert-danger alert-dismissible fade show">No internet connection!</div>;
   }
 
   if (isServerDown) {
-    return <div className="alert alert-warning">Server is down!</div>;
+    return <div className="alert alert-warning alert-dismissible fade show">Server is down!</div>;
   }
 
   return null;
