@@ -21,7 +21,7 @@ function ConnectionStatus() {
   useEffect(() => {
     const checkServerStatus = async () => {
       try {
-        await fetch('http://localhost:4000');
+        await fetch('http://localhost:3000');
         setIsServerDown(false);
       } catch (error) {
         setIsServerDown(true);
