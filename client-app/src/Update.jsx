@@ -69,7 +69,11 @@ import axios from 'axios';
 
 function Update() {
     const { id } = useParams();
-    const [values, setValues] = useState({});
+    const [values, setValues] = useState({
+        name: '',
+        price: '',
+        description: ''
+    });
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -99,13 +103,13 @@ function Update() {
                 <h1>Update Camera</h1>
                 <form onSubmit={handleUpdate}>
                     <div className='mb-2'>
-                        <input type="text" name='name' className="form-control" placeholder='Enter Name' value={values.name || ''} onChange={handleChange} />
+                        <input type="text" name='name' className="form-control" placeholder= {values.cameraName || ''} onChange={handleChange} />
                     </div>
                     <div className='mb-2'>
-                        <input type="number" name='price' className='form-control' placeholder='Enter Price' value={values.price || ''} onChange={handleChange} />
+                        <input type="number" name='price' className='form-control' placeholder={values.cameraPrice || ''} onChange={handleChange} />
                     </div>
                     <div className='mb-3'>
-                        <input type="text" name='description' className='form-control' placeholder='Enter Description' value={values.description || ''} onChange={handleChange} />
+                        <input type="text" name='description' className='form-control' placeholder={values.cameraDescription || ''} onChange={handleChange} />
                     </div>
                     <button type="submit" className='btn btn-success'>Update</button>
                     <Link to="/" className='btn btn-primary ms-3'>Back</Link>

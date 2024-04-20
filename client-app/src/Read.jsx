@@ -33,7 +33,7 @@ function Read() {
         event.preventDefault();
         const newReview = {
             ...values,
-            cameraId: camera.id, // Assign the cameraId from the camera state
+            cameraId: camera.cameraId, // Assign the cameraId from the camera state
             text: values.text          
         };
         console.log('New Review:', newReview); // Log the new review object
@@ -55,13 +55,13 @@ function Read() {
             <div className='w-50 border bg-white shadow px-5 pt-3 pb-5 rounded'>
                 <h3>Camera details</h3>
                 <div className='mb-2'>
-                    <strong>Name: {camera.name}</strong>
+                    <strong>Name: {camera.cameraName}</strong>
                 </div>
                 <div className='mb-2'>
-                    <strong>Price: {camera.price}</strong>
+                    <strong>Price: {camera.cameraPrice}</strong>
                 </div>
                 <div className='mb-3'>
-                    <strong>Description: {camera.description}</strong>
+                    <strong>Description: {camera.cameraDescription}</strong>
                 </div>
                 <Link to={`/update/${id}`} className='btn btn-success'>Edit</Link>
                 <Link to="/" className='btn btn-primary ms-3'>Back</Link>

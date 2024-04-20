@@ -10,25 +10,30 @@ function Home() {
     const [totalPages, setTotalPages] = useState(1); // Total number of pages
 
     useEffect(() => {
-        // Calculate the starting index based on current page and items per page
         const startIndex = (currentPage - 1) * perPage;
         
-        axios.get(`http://localhost:4000/cameras`)
+        axios.get(`http://localhost:3000/cameras`)
             .then(res => {
                 const totalItems = res.data.length;
                 const totalPages = Math.ceil(totalItems / perPage);
                 setTotalPages(totalPages);
                 // Fetch cameras for the current page
-                return axios.get(`http://localhost:4000/cameras?_start=${startIndex}&_limit=${perPage}`);
+                return axios.get(`http://localhost:3000/cameras?_start=${startIndex}&_limit=${perPage}`);
             })
-            .then(res => setCameras(res.data))
+            .then(res => {
+                console.log("Cameras Retrieved:");
+                res.data.forEach(camera => {
+                    console.log(camera);
+                });
+                setCameras(res.data);
+            })
             .catch(err => console.log(err));
     }, [currentPage, perPage]);
 
     const handleDelete = (id) => {
         const confirmDelete = window.confirm('Are you sure you want to delete this camera?');
         if (confirmDelete) {
-            axios.delete(`http://localhost:4000/cameras/${id}`)
+            axios.delete(`http://localhost:3000/cameras/${id}`)
                 .then(res => {
                     setCameras(prevCameras => prevCameras.filter(camera => camera.id !== id));
                 })
@@ -55,15 +60,15 @@ function Home() {
                     </thead>
                     <tbody>
                         {cameras.map(camera => (
-                            <tr key={camera.id}>
-                                <td>{camera.name}</td>
-                                <td>{camera.price}</td>
-                                <td>{camera.description}</td>
+                            <tr key={camera.cameraId}>
+                                <td>{camera.cameraName}</td>
+                                <td>{camera.cameraPrice}</td>
+                                <td>{camera.cameraDescription}</td>
                                 <td>
                                     <div className="btn-group btn-group-sm" role="group" aria-label="Camera Actions">
-                                        <Link to={`/update/${camera.id}`} className="btn btn-primary">Edit</Link>
-                                        <Link to={`/read/${camera.id}`} className="btn btn-dark">Info</Link>
-                                        <button onClick={() => handleDelete(camera.id)} className="btn btn-danger">Delete</button>
+                                        <Link to={`/update/${camera.cameraId}`} className="btn btn-primary">Edit</Link>
+                                        <Link to={`/read/${camera.cameraId}`} className="btn btn-dark">Info</Link>
+                                        <button onClick={() => handleDelete(camera.cameraId)} className="btn btn-danger">Delete</button>
                                     </div>
                                 </td>
                             </tr>
