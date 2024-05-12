@@ -118,16 +118,23 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
     const [cameras, setCameras] = useState([]);
     const [hasMore, setHasMore] = useState(true);
     const [page, setPage] = useState(1);
+    const navigate = useNavigate();
 
     const fetchMoreData = () => {
         setPage(page + 1);
     };
-
+    useEffect(() => {
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+          // Redirect to login page if token is not available
+          navigate('/login');
+        }});
     useEffect(() => {
         fetchData();
     }, []);
@@ -139,7 +146,12 @@ function Home() {
     }, [page]);
 
     const fetchData = () => {
-        axios.get(`http://localhost:3000/cameras?page=1`)
+        const token = sessionStorage.getItem('token');
+        axios.get(`http://localhost:3000/cameras?page=1`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then(res => {
                 console.log("Cameras Retrieved:");
                 console.log(res.data);
@@ -149,7 +161,12 @@ function Home() {
     };
 
     const fetchMore = () => {
-        axios.get(`http://localhost:3000/cameras?page=${page}`)
+        const token = sessionStorage.getItem('token');
+        axios.get(`http://localhost:3000/cameras?page=${page}`,{
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then(res => {
                 console.log("More Cameras Retrieved:");
                 console.log(res.data);
@@ -162,9 +179,14 @@ function Home() {
     };
 
     const handleDelete = (id) => {
+        const token = sessionStorage.getItem('token');
         const confirmDelete = window.confirm('Are you sure you want to delete this camera?');
         if (confirmDelete) {
-            axios.delete(`http://localhost:3000/cameras/${id}`)
+            axios.delete(`http://localhost:3000/cameras/${id}`,{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
                 .then(() => {
                     // Filter out the deleted camera from the state
                     setCameras(prevCameras => prevCameras.filter(camera => camera.cameraId !== id));

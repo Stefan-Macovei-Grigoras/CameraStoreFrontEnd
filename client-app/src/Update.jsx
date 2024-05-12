@@ -67,7 +67,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+
 function Update() {
+    const token = sessionStorage.getItem('token');
     const { id } = useParams();
     const [values, setValues] = useState({
         name: '',
@@ -75,16 +77,30 @@ function Update() {
         description: ''
     });
     const navigate = useNavigate();
-
     useEffect(() => {
-        axios.get(`http://localhost:3000/cameras/${id}`)
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+          // Redirect to login page if token is not available
+          navigate('/login');
+        }});
+    useEffect(() => {
+        axios.get(`http://localhost:3000/cameras/${id}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then(res => setValues(res.data))
             .catch(err => console.log(err));
     }, [id]);
 
     const handleUpdate = (event) => {
         event.preventDefault();
-        axios.put(`http://localhost:3000/cameras/${id}`, values)
+        axios.put(`http://localhost:3000/cameras/${id}`, values, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then(res => {
                 console.log(res);
                 navigate('/');

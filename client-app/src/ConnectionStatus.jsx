@@ -1,10 +1,12 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function ConnectionStatus() {
   const [isOnline, setIsOnline] = useState(true);
   const [isServerDown, setIsServerDown] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -20,9 +22,14 @@ function ConnectionStatus() {
   }, []);
 
   useEffect(() => {
+    const token = sessionStorage.getItem('token');
     const checkServerStatus = async () => {
       try {
-        await fetch('http://localhost:3000/cameras');
+        await fetch('http://localhost:3000/cameras',{ headers: {
+          Authorization: `Bearer ${token}`
+      }}
+          
+        );
         setIsServerDown(false);
       } catch (error) {
         setIsServerDown(true);

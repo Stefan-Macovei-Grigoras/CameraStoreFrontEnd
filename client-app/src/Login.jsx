@@ -23,7 +23,7 @@ function LoginPage() {
       const response = await axios.post('http://localhost:3000/login', credentials);
       const { token, message } = response.data; // Updated to handle both token and message
       if (message === 'Login successful') {
-        localStorage.setItem('token', token);
+        sessionStorage.setItem('token', token);
         navigate('/');
       }
     } catch (error) {

@@ -69,13 +69,25 @@ import Chart from 'chart.js/auto';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import "chart.js/auto";
-
+import { useNavigate } from 'react-router-dom';
 
 function DonutChart() {
     const [priceRangeData, setPriceRangeData] = useState({});
+    const navigate = useNavigate();
+    useEffect(() => {
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+          // Redirect to login page if token is not available
+          navigate('/login');
+        }});
 
     useEffect(() => {
-        axios.get('http://localhost:3000/cameras')
+        const token = sessionStorage.getItem('token');
+        axios.get('http://localhost:3000/cameras',{
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then(res => {
                 const data = res.data;
                 const priceRanges = {

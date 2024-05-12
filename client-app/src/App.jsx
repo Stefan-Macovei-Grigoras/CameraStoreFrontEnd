@@ -9,6 +9,7 @@ import Update from './Update.jsx'
 import Read from './Read.jsx'
 import Login from './Login.jsx'
 import RegisterPage from './Register.jsx'
+import Dashboard from './Dashboard'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Statistics from './Statistics.jsx'
 import ConnectionStatus from './ConnectionStatus.jsx'
@@ -25,6 +26,7 @@ function App() {
         <Route path='/update/:id' element={<Update />} />
         <Route path='/read/:id' element={<Read />} />
         <Route path='/stats' element={<Statistics />} />
+        <Route path='/dashboard' element = {<Dashboard></Dashboard>}/>
       </Routes>
     </BrowserRouter>
   );

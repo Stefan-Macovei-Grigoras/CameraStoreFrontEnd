@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useNavigate } from 'react-router-dom';
 
 function Read() {
     const [camera, setCamera] = useState({});
@@ -9,12 +10,18 @@ function Read() {
     const { id } = useParams();
     const [hasMore, setHasMore] = useState(true);
     const [page, setPage] = useState(1);
-
     const [values, setValues] = useState({});
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchData();
     }, [id]);
+
+    useEffect(() => {
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+        }});
 
     useEffect(() => {
         if (page !== 1) {
@@ -23,27 +30,45 @@ function Read() {
     }, [page]);
 
     const fetchData = () => {
-        axios.get(`http://localhost:3000/cameras/${id}`)
+        const token = sessionStorage.getItem('token');
+        axios.get(`http://localhost:3000/cameras/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        .then(res => {
+            setCamera(res.data);
+            const cameraId = res.data.cameraId;
+            axios.get(`http://localhost:3000/reviews/${cameraId}?page=1`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
             .then(res => {
-                setCamera(res.data);
-                const cameraId = res.data.cameraId;
-                axios.get(`http://localhost:3000/reviews/${cameraId}?page=1`)
-                    .then(res => {
-                        setReviews(res.data);
-                        if (res.data.length === 0) {
-                            setHasMore(false);
-                        }
-                    })
-                    .catch(err => console.log(err));
+                setReviews(res.data);
+                if (res.data.length === 0) {
+                    setHasMore(false);
+                }
             })
             .catch(err => console.log(err));
+        })
+        .catch(err => console.log(err));
     };
 
     const fetchMore = () => {
-        axios.get(`http://localhost:3000/cameras/${id}`)
+        const token = sessionStorage.getItem('token');
+        axios.get(`http://localhost:3000/cameras/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then(res => {
                 const cameraId = res.data.cameraId;
-                axios.get(`http://localhost:3000/reviews/${cameraId}?page=${page}`)
+                axios.get(`http://localhost:3000/reviews/${cameraId}?page=${page}`,{       
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+            })
                     .then(res => {
                         setReviews(prevReviews => [...prevReviews, ...res.data]);
                         if (res.data.length === 0) {
@@ -57,12 +82,16 @@ function Read() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        const token = sessionStorage.getItem('token');
         const newReview = {
             ...values,
             cameraId: camera.cameraId,
             reviewText: values.text
         };
-        axios.post('http://localhost:3000/reviews', newReview)
+        axios.post('http://localhost:3000/reviews', newReview, {
+            headers: {
+                Authorization: `Bearer ${token}` // Include the token in the Authorization header
+            }})
             .then(res => {
                 fetchData();
                 setValues({});
@@ -76,9 +105,14 @@ function Read() {
     };
 
     const handleDelete = (id) => {
+        const token = sessionStorage.getItem('token');
         const confirmDelete = window.confirm('Are you sure you want to delete this review?');
         if (confirmDelete) {
-            axios.delete(`http://localhost:3000/reviews/${id}`)
+            axios.delete(`http://localhost:3000/reviews/${id}`,{       
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+        })
                 .then(() => {
                     // Fetch all reviews again to repopulate the state
                     fetchData();
