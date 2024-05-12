@@ -1,57 +1,100 @@
-/* eslint-disable no-unused-vars */
-// /* eslint-disable no-unused-vars */
-
-// export default Read;
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
-//import { text } from 'stream/consumers';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 function Read() {
     const [camera, setCamera] = useState({});
     const [reviews, setReviews] = useState([]);
     const { id } = useParams();
+    const [hasMore, setHasMore] = useState(true);
+    const [page, setPage] = useState(1);
 
     const [values, setValues] = useState({});
 
     useEffect(() => {
-        // Fetch camera details
+        fetchData();
+    }, [id]);
+
+    useEffect(() => {
+        if (page !== 1) {
+            fetchMore();
+        }
+    }, [page]);
+
+    const fetchData = () => {
         axios.get(`http://localhost:3000/cameras/${id}`)
             .then(res => {
                 setCamera(res.data);
-                const cameraId = res.data.id;
-                axios.get(`http://localhost:3000/reviews/${cameraId}`)
+                const cameraId = res.data.cameraId;
+                axios.get(`http://localhost:3000/reviews/${cameraId}?page=1`)
                     .then(res => {
                         setReviews(res.data);
+                        if (res.data.length === 0) {
+                            setHasMore(false);
+                        }
                     })
                     .catch(err => console.log(err));
             })
             .catch(err => console.log(err));
-    }, [id]);
+    };
+
+    const fetchMore = () => {
+        axios.get(`http://localhost:3000/cameras/${id}`)
+            .then(res => {
+                const cameraId = res.data.cameraId;
+                axios.get(`http://localhost:3000/reviews/${cameraId}?page=${page}`)
+                    .then(res => {
+                        setReviews(prevReviews => [...prevReviews, ...res.data]);
+                        if (res.data.length === 0) {
+                            setHasMore(false);
+                        }
+                    })
+                    .catch(err => console.log(err));
+            })
+            .catch(err => console.log(err));
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const newReview = {
             ...values,
-            cameraId: camera.cameraId, // Assign the cameraId from the camera state
-            text: values.text          
+            cameraId: camera.cameraId,
+            reviewText: values.text
         };
-        console.log('New Review:', newReview); // Log the new review object
         axios.post('http://localhost:3000/reviews', newReview)
             .then(res => {
-                console.log(res);
+                fetchData();
+                setValues({});
             })
             .catch(err => console.log(err));
     };
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        console.log(name, value);
         setValues({ ...values, [name]: value });
     };
 
+    const handleDelete = (id) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this review?');
+        if (confirmDelete) {
+            axios.delete(`http://localhost:3000/reviews/${id}`)
+                .then(() => {
+                    // Fetch all reviews again to repopulate the state
+                    fetchData();
+                })
+                .catch(err => console.log(err));
+        }
+    };
+    
+    
+
+    const refreshFunction = () => {
+        fetchData();
+    };
+
     return (
-        <div className='d-flex flex-column w-100 vh-100 justify-content-center align-items-center'>
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
             <div className='w-50 border bg-white shadow px-5 pt-3 pb-5 rounded'>
                 <h3>Camera details</h3>
                 <div className='mb-2'>
@@ -66,22 +109,38 @@ function Read() {
                 <Link to={`/update/${id}`} className='btn btn-success'>Edit</Link>
                 <Link to="/" className='btn btn-primary ms-3'>Back</Link>
             </div>
-            <div className="card text-center">
+            <div className="card text-center mt-3 bg-white shadow px-5">
                 <h4 className="card-header">Testimonials</h4>
-                <div className="testimonial-list border-1">
-                    {reviews.map(review => (
-                        <div className="card-body border rounded mb-4" key={review.id}>
-                            <p className="card-textmt-2">{review.text}</p>
+                <InfiniteScroll
+                    dataLength={reviews.length}
+                    next={() => setPage(page + 1)}
+                    hasMore={hasMore}
+                    //loader={<h4>Loading...</h4>}
+                    scrollableTarget="scrollableDiv"
+                    pullDownToRefresh
+                    pullDownToRefreshContent={<h3>Pull down to refresh</h3>}
+                    releaseToRefreshContent={<h3>Release to refresh</h3>}
+                    refreshFunction={refreshFunction}
+                    endMessage={<p style={{ textAlign: 'center' }}>Yay! You have seen it all</p>}
+                >
+                    <div id="scrollableDiv" style={{ maxHeight: '400px', overflow: 'auto' }}>
+                        <div className="testimonial-list border-1">
+                            {reviews.map(review => (
+                                <div className="card-body border rounded mb-4" key={review.reviewId}>
+                                    <p className="card-text mt-2">{review.reviewText}</p>
+                                    <button onClick={() => handleDelete(review.reviewId)} className="btn btn-danger">Delete</button>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-                <div className="card-footer">
-                <form onSubmit={handleSubmit}>
-                    <div className='mb-2'>
-                        <input type="text" name='text' className="form-control" placeholder='Enter Review' onChange={handleChange} />
                     </div>
-                    <button type="submit" className='btn btn-success'>Submit</button>
-                </form>
+                </InfiniteScroll>
+                <div className="card-footer">
+                    <form onSubmit={handleSubmit}>
+                        <div className='mb-2'>
+                            <input type="text" name='text' className="form-control" placeholder='Enter Review' onChange={handleChange} />
+                        </div>
+                        <button type="submit" className='btn btn-success'>Submit</button>
+                    </form>
                 </div>
             </div>
         </div>

@@ -7,6 +7,8 @@ import Home from './Home.jsx'
 import Create from './Create.jsx'
 import Update from './Update.jsx'
 import Read from './Read.jsx'
+import Login from './Login.jsx'
+import RegisterPage from './Register.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Statistics from './Statistics.jsx'
 import ConnectionStatus from './ConnectionStatus.jsx'
@@ -16,6 +18,8 @@ function App() {
     <BrowserRouter>
      <ConnectionStatus />
       <Routes>
+        <Route path = '/login' element={<Login/>} />
+        <Route path = '/register' element={<RegisterPage/>} />
         <Route path='/' element={<Home />}></Route>
         <Route path='/create' element={<Create />} />
         <Route path='/update/:id' element={<Update />} />

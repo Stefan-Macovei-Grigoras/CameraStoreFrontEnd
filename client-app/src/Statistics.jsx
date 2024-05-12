@@ -64,11 +64,12 @@
 // }
 
 // export default DonutChart;
-
 import React, { useEffect, useState } from 'react';
 import Chart from 'chart.js/auto';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import "chart.js/auto";
+
 
 function DonutChart() {
     const [priceRangeData, setPriceRangeData] = useState({});
@@ -100,6 +101,12 @@ function DonutChart() {
     useEffect(() => {
         if (Object.keys(priceRangeData).length > 0) {
             const ctx = document.getElementById('donutChart');
+            // Check if a Chart instance already exists on the canvas
+            if (ctx && ctx.chart) {
+                // Destroy the existing Chart instance
+                ctx.chart.destroy();
+            }
+            // Render the new Chart
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -114,15 +121,24 @@ function DonutChart() {
                         ],
                         hoverOffset: 4
                     }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false // Add this option to prevent the chart from maintaining aspect ratio
                 }
             });
         }
     }, [priceRangeData]);
+    
 
     return (
-        <div className="d-flex flex-column justify-content-center align-items-center vh-70">
+        <div className="d-flex flex-column justify-content-center align-items-center vh-95">
             <h2>Price Range Distribution</h2>
-            <canvas id="donutChart" width="200" height="200"></canvas>
+            {Object.keys(priceRangeData).length > 0 && (
+                <div style={{ width: '100%', height: '100%' }}>
+                    <canvas id="donutChart"></canvas>
+                </div>
+            )}
             <div className="col-md-12 text-right">
                 <Link to="/" className='btn btn-primary ms-3'>Back</Link>
             </div>
@@ -131,3 +147,4 @@ function DonutChart() {
 }
 
 export default DonutChart;
+
